@@ -93,11 +93,16 @@ def main():
 
     for this_pkgpath in args.pkgpath:
         pkg, pkgpath = this_pkgpath.split('/', 1)
+        print(f'pkg: [{pkg}]')
+        print(f'pkgpath: [{pkgpath}]')
         if not pkg:
             print("Unable to locate package your job launch is in."
                   " Installation aborted. " + DESC_PKGPATH +
                   "\npkgpath passed: {}.".format(pkgpath))
-            return 1
+            # return 1
+            print(f"*** RANDEL: trying to install from absolute path....")
+            found_path = this_pkgpath
+            pkgpath = this_pkgpath
 
         found_path = find_in_workspaces(project=pkg, path=pkgpath, first_match_only=True)
         if not found_path:
@@ -107,9 +112,13 @@ def main():
         if os.path.isfile(found_path[0]):
             # Single file, install just that.
             j.add(package=pkg, filename=pkgpath)
-        else:
+        elif os.path.isdir(found_path[0]):
             # Directory found, install everything within.
             j.add(package=pkg, glob=os.path.join(pkgpath, "*"))
+        else:
+            # *** RANDEL: path is neither a file nor a directory
+            print("*** RANDEL: path is neither a file nor a directory. Exiting...")
+            return 1
 
     if args.augment:
         j.generate_system_files = False
