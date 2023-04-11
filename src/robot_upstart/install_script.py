@@ -96,9 +96,7 @@ def main():
         print(f'pkg: [{pkg}]')
         print(f'pkgpath: [{pkgpath}]')
         if not pkg:
-            print("Unable to locate package your job launch is in."
-                  " Installation aborted. " + DESC_PKGPATH +
-                  "\npkgpath passed: {}.".format(pkgpath))
+            print("Trying to install from absolute path \npkgpath passed: {}.".format(pkgpath))
             # return 1
             print(f"*** RANDEL: trying to install from absolute path....")
             found_path = this_pkgpath
@@ -111,9 +109,11 @@ def main():
 
         if os.path.isfile(found_path[0]):
             # Single file, install just that.
+            print(f"*** RANDEL: File found, adding it to {j.name} service...")
             j.add(package=pkg, filename=pkgpath)
         elif os.path.isdir(found_path[0]):
             # Directory found, install everything within.
+            print(f"*** RANDEL: Directory found, adding everything inside to {j.name} service...")
             j.add(package=pkg, glob=os.path.join(pkgpath, "*"))
         else:
             # *** RANDEL: path is neither a file nor a directory
